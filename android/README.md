@@ -29,6 +29,6 @@ Website: `https://streamingpulse.netlify.app/`
 Open this folder in Android Studio, allow Gradle sync, then use **Build > Generate Signed Bundle / APK > Android App Bundle**. The output is normally under `app/build/outputs/bundle/release/`.
 
 The project includes the Gradle 8.9 Wrapper. On Windows, `gradlew.bat --version` can be used to verify it before opening Android Studio.
-The default Gradle heap is limited to 1 GiB with two workers for stability on Windows development machines.
+The verified Windows build profile uses a 768 MiB Gradle heap, one worker, and no persistent daemon or parallel build.
 
 The example Firebase file is intentionally non-functional. A real AAB with login and Billing cannot be tested until Play Console and Firebase have been configured.
