@@ -8,6 +8,7 @@ Website: `https://streamingpulse.netlify.app/`
 - Secure HTTPS WebView for the existing StreamPulse site
 - Firebase Email/password and Google sign-in
 - Google Play subscriptions: `streampulse_monthly_190` and `streampulse_yearly_2080`
+- Google Play Billing Library 9.1.0 API
 - Server-side Google Play Developer API validation
 - Firestore entitlements shared across devices
 - 15-second free state and premium entitlement bridge to the website
