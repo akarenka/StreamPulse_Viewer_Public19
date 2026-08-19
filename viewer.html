@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <link rel="icon" href="data:,">
     <title>StreamPulse 影音大廳</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -1387,16 +1388,19 @@
             video.currentTime = 0;
             const playPromise = video.play();
             if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    isPlaying = true;
-                    document.getElementById('play-pause-icon').className = 'fa-solid fa-pause';
-                }).catch(() => {
-                    isPlaying = false;
-                    document.getElementById('play-pause-icon').className = 'fa-solid fa-play';
-                });
-            }
-
-            document.getElementById('paywall-overlay').classList.add('hidden');
+                          playPromise.then(() => {
+                              isPlaying = true;
+                              document.getElementById('play-pause-icon').className = 'fa-solid fa-pause';
+                         }).catch((error) => {
+                             isPlaying = false;
+                             document.getElementById('play-pause-icon').className = 'fa-solid fa-play';
+                             // 若非使用者快速切換/暫停引起的中斷，才在主控台輸出警示
+                             if (error && error.name !== 'AbortError') {
+                                 console.warn('影片播放受阻:', error);
+                             }
+                            });
+                         }            
+                      document.getElementById('paywall-overlay').classList.add('hidden');
 
             const isPaid = currentUser && currentUser.isPaid;
 
