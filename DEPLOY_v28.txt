@@ -1,0 +1,21 @@
+StreamPulse v28 deployment
+
+1. Upload live.html, viewer-config.js and firebase-config.js to the GitHub repository root.
+2. From this extracted folder run:
+   firebase deploy --project streampulse-3eb7a --only functions:viewerApi
+3. Firestore rules are unchanged in purpose. Deploy only if needed:
+   firebase deploy --project streampulse-3eb7a --only firestore:rules
+4. Build the Android project v28 and install version 2.8.0.
+
+Unified login behavior:
+- Browser: one Google / Gmail button.
+- Android: native Google sign-in; the duplicate web button is hidden.
+- The backend maps the verified Google email to one Firebase UID for Room owner/admin permissions.
+StreamPulse v29 Google/Gmail-only authentication
+================================================
+Google Identity Services is the only user login and authentication method.
+No Firebase Auth account, Firebase UID, or custom-token bridge is required.
+Room owner and up to two Room Admin permissions use verified Google/Gmail email addresses.
+Rooms, roles and chat are stored in the current browser or App WebView only; Firebase Auth, UID and viewerApi are not used.
+
+v29.1 local mode update: Room creation, entry, administrator settings, Bot settings and chat messages are stored locally and do not call viewerApi or send a Google token to a chat backend.
