@@ -1,0 +1,9 @@
+.gradle/
+.idea/
+local.properties
+app/google-services.json
+*.jks
+*.keystore
+**/build/
+backend/node_modules/
+backend/.runtimeconfig.json
