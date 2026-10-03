@@ -1,6 +1,6 @@
 # StreamPulse 浮動 AI 客服：Netlify 版
 
-已加入 index.html、support-widget.js、support-config.js。歡迎詞與常見問題在前端運作；AI 透過 Netlify Functions。未推送、未線上部署。
+已加入 index.html、support-widget.js、support-config.js。歡迎詞與常見問題在前端運作；AI 透過 Netlify Functions。
 
 ## 1. 更新原 repository
 保留原有檔案，加入／更新：
@@ -40,5 +40,10 @@
 
 AI 問題與最近 8 則歷史會傳給 OpenAI；store:false 不代表零資料留存。請勿傳送密碼或付款資料。
 
+## 三語客服
+客服支援繁體中文、English、日本語。預設依瀏覽器語言，亦可在視窗上方切換，選擇保存在本機。切換會清空 AI 歷史，但保留畫面上的舊訊息。
+
+提供登入、播放、影音庫、播放清單、上傳、分享、訂閱付款、聯絡管理員共 8 類 FAQ，以及問候、感謝與道別回覆。FAQ 不需要 AI 金鑰；自由問答仍需上述環境變數。AI 請求使用白名單 language 欄位，後端要求以所選語言回答。
+
 ## 驗證狀態
-語法檢查、5 項模擬測試及靜態網站建置通過。尚未完成真實 AI、Redis 或 Netlify 線上測試。
+語法檢查、6 項模擬後端測試及靜態網站建置通過。尚未完成真實 AI、Redis 或 Netlify 線上測試。

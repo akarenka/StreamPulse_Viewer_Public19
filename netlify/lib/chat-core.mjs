@@ -14,6 +14,8 @@ export default async function handler(req, res) {
   if(!OPENAI_API_KEY||!OPENAI_MODEL||!UPSTASH_REDIS_REST_URL||!UPSTASH_REDIS_REST_TOKEN||!RATE_LIMIT_SALT)return res.status(503).json({error:'AI 客服尚未設定完成'});
   let body;try{body=typeof req.body==='string'?JSON.parse(req.body):req.body;}catch{return res.status(400).json({error:'格式錯誤'});}
   if(!body||typeof body.message!=='string'||!body.message.trim()||body.message.length>1000||!Array.isArray(body.history)||body.history.length>8||body.history.some(x=>!x||!['user','assistant'].includes(x.role)||typeof x.content!=='string'||x.content.length>4000))return res.status(400).json({error:'訊息或歷史格式錯誤'});
+  const languages={'zh-TW':'Traditional Chinese',en:'English',ja:'Japanese'};
+  if(body.language!==undefined&&!Object.hasOwn(languages,body.language))return res.status(400).json({error:'Invalid language'});
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
   try{
     // Identity is supplied by Netlify context.ip, never a client header.
@@ -27,7 +29,7 @@ export default async function handler(req, res) {
     if(!Array.isArray(counts.result)||counts.result.length!==2||counts.result.some(x=>!Number.isFinite(Number(x))))throw new Error('budget');
     const daily=Number(process.env.DAILY_REQUEST_LIMIT||100);if(!Number.isInteger(daily)||daily<1)throw new Error('config');
     if(Number(counts.result[0])>5||Number(counts.result[1])>daily){res.setHeader('Retry-After','60');return res.status(429).json({error:'客服使用額度已達限制，請稍後再試'});}
-    const reply=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${OPENAI_API_KEY}`,'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({model:OPENAI_MODEL,store:false,max_output_tokens:600,instructions:'你是 StreamPulse 網站客服，依使用者語言簡短回答。網站有 Google 登入、影音播放及個人影音庫。無法查閱私人資料、訂單或修改帳號。對價格、付款、管理設定等未知內容請坦承不確定並請使用者聯絡管理員。不要索取密碼、密鑰、信用卡。不可聲稱完成任何操作。',input:[...body.history,{role:'user',content:body.message.trim()}]})});
+    const reply=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${OPENAI_API_KEY}`,'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({model:OPENAI_MODEL,store:false,max_output_tokens:600,instructions:(body.language ? 'Respond in '+languages[body.language]+'. ' : '')+'你是 StreamPulse 網站客服，依使用者語言簡短回答。網站有 Google 登入、影音播放及個人影音庫。無法查閱私人資料、訂單或修改帳號。對價格、付款、管理設定等未知內容請坦承不確定並請使用者聯絡管理員。不要索取密碼、密鑰、信用卡。不可聲稱完成任何操作。',input:[...body.history,{role:'user',content:body.message.trim()}]})});
     if(!reply.ok)throw new Error('upstream');const data=await reply.json();
     const text=(data.output||[]).filter(x=>x.type==='message').flatMap(x=>x.content||[]).filter(x=>x.type==='output_text').map(x=>x.text).join('\n');
     if(!text)throw new Error('empty');return res.status(200).json({reply:text});
