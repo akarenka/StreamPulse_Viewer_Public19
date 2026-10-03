@@ -1,0 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import chat from '../netlify/functions/chat.mjs';
+test('Netlify adapter supports preflight and origin blocking',async()=>{process.env.ALLOWED_ORIGINS='https://example.netlify.app';let r=await chat(new Request('https://example.netlify.app/.netlify/functions/chat',{method:'OPTIONS',headers:{origin:'https://example.netlify.app'}}),{ip:'127.0.0.1'});assert.equal(r.status,204);assert.equal(r.headers.get('access-control-allow-origin'),'https://example.netlify.app');r=await chat(new Request('https://example.netlify.app/.netlify/functions/chat',{method:'POST',headers:{origin:'https://other.example','content-type':'application/json'},body:'{}'}),{ip:'127.0.0.1'});assert.equal(r.status,403);});
+test('Netlify adapter rejects non-JSON and oversized requests',async()=>{let r=await chat(new Request('https://example.netlify.app',{method:'POST',body:'text'}),{ip:'127.0.0.1'});assert.equal(r.status,415);r=await chat(new Request('https://example.netlify.app',{method:'POST',headers:{'content-type':'application/json'},body:'x'.repeat(40001)}),{ip:'127.0.0.1'});assert.equal(r.status,413);});

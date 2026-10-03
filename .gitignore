@@ -1,0 +1,5 @@
+
+# Generated build and local secrets
+dist/
+.env
+.env.local
